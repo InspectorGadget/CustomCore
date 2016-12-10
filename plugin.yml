@@ -1,0 +1,6 @@
+name: CustomCore
+version: 1.0.0
+author: RTGTeam
+description: People has been dreaming for ages, now its a reality!
+main: IGTheCore\Core\ServerCore
+api: [2.0.0, 2.1.0]
