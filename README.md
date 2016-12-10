@@ -1,1 +1,2 @@
-# private
+# CUSTOMCORE
+- CORE FOR MY SERVER!
