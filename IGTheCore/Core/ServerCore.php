@@ -11,17 +11,22 @@ use pocketmine\utils\Config;
 use pocketmine\Server;
 use pocketmine\Player;
 use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\utils\TextFormat as TF;
 
 class ServerCore extends PluginBase implements Listener {
 
 	public function onEnable() {
+	
+		@mkdir($this->getDataFolder());
+		
 		$this->getServer()->registerEvents($this, $this);
 		$this->getLogger()->warning("
 		* Starting CustomCore!
 		* Ploting Server DB!
 		");
+		$this->ips = new Config($this->getDataFolder() . "ips.txt", Config::ENUM, array());
 	}
 	
 	public function onJoin(PlayerJoinEvent $e) {
@@ -35,7 +40,7 @@ class ServerCore extends PluginBase implements Listener {
 		$text[1] = TF::BOLD . TF::RED . "Welcome" . TF::GREEN . "to" . TF::YELLOW . "JDCustom!";
 		$text[2] = "We have about" . TF::RED . count($this->getServer()->getOnlinePlayers() . TF::RESET . " players online!";
 		$text[3] = "Our Website: " . TF::RED . "https://jdcraft.net";
-		$text[4] = "Check your inventory!";
+		$text[4] = "Please check your inventory!";
 		
 		$p->sendMessage($text[0]);
 		$p->sendMessage($text[1]);
@@ -44,6 +49,13 @@ class ServerCore extends PluginBase implements Listener {
 		$p->sendMessage($text[4]);
 		
 		$this->onItem($player);
+		
+		if($this->ips->get($n)) {
+			$ip = $p->getAddress();
+			if($ip != $this->ips->getAll()) {
+				$this->getLogger()->warning("$n joined with a new IP!");
+			}
+		}
 	}
 	
 	public function onHeld(PlayerItemHeldEvent $ev) {
@@ -129,8 +141,8 @@ class ServerCore extends PluginBase implements Listener {
 		
 		$sender->sendMessage("Usage: /fly <on | off>");
 		
-			if(isset($args[1])) {
-				switch(strtolower($args[1])) {
+			if(isset($args[0])) {
+				switch(strtolower($args[0])) {
 				
 					case "on":
 						
@@ -150,6 +162,36 @@ class ServerCore extends PluginBase implements Listener {
 				}
 			}
 			
+			return true;
+		break;
+		
+		case "playerinfo":
+		
+			if(isset($args[0])) {
+				switch(strtolower($args[0])) {
+				
+				// Non logic
+				$non = $args[0];
+				
+				// Logic
+				$p = $this->getServer()->getPlayer($non);
+				$n = $p->getName();
+						
+					if($p->isOnline()) {
+						$ip = $p->getAddress();
+						$cid = $p->getClientId();
+						$uid = $p->getUniqueId();
+				
+						$sender->sendMessage("-- $non's Info --\nCID: $cid\nIP: $ip\nUID: $uid");
+						
+						$this->ips->set($n, $ip);
+						$this->ips->save();
+					}
+					else {
+						$sender->sendMessage("$non isn't Online!");
+					}
+				}
+			}
 			return true;
 		break;
 		}
