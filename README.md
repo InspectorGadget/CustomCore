@@ -1,2 +1,4 @@
 # CUSTOMCORE
 - CORE FOR MY SERVER!
+Todo:
+PERM Nodes
