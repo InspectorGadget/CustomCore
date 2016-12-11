@@ -139,7 +139,7 @@ class ServerCore extends PluginBase implements Listener {
 		
 		case "fly":
 		
-		$sender->sendMessage("Usage: /fly <on | off>");
+			$sender->sendMessage("Usage: /fly <on | off>");
 		
 			if(isset($args[0])) {
 				switch(strtolower($args[0])) {
@@ -194,8 +194,32 @@ class ServerCore extends PluginBase implements Listener {
 			}
 			return true;
 		break;
+		
+		case "tp":
+		
+			if(isset($args[0])) {
+			
+				$param = $args[0];
+				
+				$p = $this->getServer()->getPlayer($param);
+				
+				if($p instanceof Player && $sender instanceof Player) {
+				
+					$sender->teleport($player);
+					$sender->sendMessage("You have teleported to $param");
+					$p->sendMessage("A player has teleported to you!");
+				
+				}
+				else {
+					$sender->sendMessage("You are not a Player or $param isn't a Player!");
+				}
+			}
+			else {
+				$sender->sendMessage("Usage: /tp <player>");
+			}
+			return true;
+		break;
 		}
-	
 	}
 	
 	public function gmHelp($player) {
